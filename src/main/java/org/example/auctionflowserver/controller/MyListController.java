@@ -67,4 +67,22 @@ public class MyListController {
     }
 
 
+
+    // 마이페이지 내 판매내역
+    @GetMapping("/sell")
+    public List<ItemResponse> mySellList(@AuthenticationPrincipal OAuth2User oAuth2User) {
+        String email = oAuth2User.getAttribute("email");
+        User user = userService.findUserByEmail(email);
+        if (user == null) {
+            throw new RuntimeException("사용자를 찾을 수 없습니다.");
+        }
+
+        List<Item> items = myListService.getSellList(user);
+        return items.stream()
+                .map(myListService::convertItemToItemResponse)
+                .collect(Collectors.toList());
+    }
+
+
+
 }
