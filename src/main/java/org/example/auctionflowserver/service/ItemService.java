@@ -90,6 +90,14 @@ public class ItemService {
                 .collect(Collectors.toList());
     }
 
+    // 상품 검색 기능
+    public List<ItemResponse> itemSearchByName(String keyword) {
+        List<Item> items = itemRepository.findByTitleContainingOrDescriptionContaining(keyword, keyword);
+        return items.stream()
+                .map(this::mapToItemResponse)
+                .collect(Collectors.toList());
+    }
+
     private ItemResponse mapToItemResponse(Item item) {
         ItemResponse response = new ItemResponse();
         response.setItemId(item.getItemId());
