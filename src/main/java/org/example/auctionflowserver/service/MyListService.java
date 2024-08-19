@@ -1,9 +1,11 @@
 package org.example.auctionflowserver.service;
 
 import org.example.auctionflowserver.dto.ItemResponse;
+import org.example.auctionflowserver.entity.Bid;
 import org.example.auctionflowserver.entity.Item;
 import org.example.auctionflowserver.entity.Like;
 import org.example.auctionflowserver.entity.User;
+import org.example.auctionflowserver.repository.BidRepository;
 import org.example.auctionflowserver.repository.ItemRepository;
 import org.example.auctionflowserver.repository.LikeRepository;
 import org.example.auctionflowserver.repository.UserRepository;
@@ -25,6 +27,9 @@ public class MyListService {
     @Autowired
     private ItemRepository itemRepository;
 
+    @Autowired
+    private BidRepository bidRepository;
+
     public List<ItemResponse> getLikeList(User user){
         List<Like> likes = likeRepository.findByUser(user);
         return likes.stream()
@@ -32,7 +37,15 @@ public class MyListService {
                 .collect(Collectors.toList());
     }
 
-    private ItemResponse convertItemToItemResponse(Item item) {
+    public List<Item> getMyItemList(User user) {
+        List<Bid> bids = bidRepository.findByUser(user);
+        return bids.stream()
+                .map(Bid::getItem)
+                .distinct()
+                .collect(Collectors.toList());
+    }
+
+    public ItemResponse convertItemToItemResponse(Item item) {
         ItemResponse itemResponse = new ItemResponse();
         itemResponse.setItemId(item.getItemId());
         itemResponse.setCategoryId(item.getCategory().getCategoryId());
@@ -50,6 +63,10 @@ public class MyListService {
         itemResponse.setItemBidStatus(item.getItemBidStatus());
         return itemResponse;
     }
+
+
+
+
 
 
 }
