@@ -45,6 +45,10 @@ public class MyListService {
                 .collect(Collectors.toList());
     }
 
+    public List<Item> getSellList(User user) {
+        return itemRepository.findByUser(user);
+    }
+
     public ItemResponse convertItemToItemResponse(Item item) {
         ItemResponse itemResponse = new ItemResponse();
         itemResponse.setItemId(item.getItemId());
