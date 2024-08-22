@@ -24,7 +24,7 @@ public class Item {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private User user;
+    private User user; // 판매자
 
     @OneToMany(mappedBy = "item", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ItemImage> productImages;  // 여러 이미지 URL을 저장하기 위한 필드

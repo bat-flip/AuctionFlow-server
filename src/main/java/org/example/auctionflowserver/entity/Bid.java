@@ -19,13 +19,13 @@ public class Bid {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private User user;
+    private User user; // 금액 제시자 => 구매자
 
     @ManyToOne
     @JoinColumn(name = "item_id")
     private Item item;
 
-    private BigDecimal bidAmount;
+    private BigDecimal bidAmount; // 최대 금액
     private LocalDateTime bidTime;
 
 
