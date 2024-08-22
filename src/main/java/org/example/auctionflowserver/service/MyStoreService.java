@@ -3,7 +3,7 @@ package org.example.auctionflowserver.service;
 import org.example.auctionflowserver.dto.StoreDTO;
 import org.example.auctionflowserver.entity.Store;
 import org.example.auctionflowserver.entity.User;
-import org.example.auctionflowserver.exception.UserNotFoundException;
+import org.example.auctionflowserver.exception.ExceptionMessage;
 import org.example.auctionflowserver.repository.StoreRepository;
 import org.example.auctionflowserver.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,9 +18,16 @@ public class MyStoreService {
     private UserRepository userRepository;
 
     public StoreDTO createStore(User user, StoreDTO storeDTO) {
-        if (user == null) {
-            throw new UserNotFoundException("사용자를 찾을 수 없습니다.");
+
+        if (user == null) { // 사용자 확인
+            throw new ExceptionMessage("사용자를 찾을 수 없습니다.");
         }
+        // 상점이 이미 존재하는지 확인
+        Store existingStore = storeRepository.findByUser(user);
+        if(existingStore != null){
+            throw new ExceptionMessage("해당 사용자의 상점이 이미 존재합니다.");
+        }
+
         Store store = new Store();
         store.setName(storeDTO.getName());
         store.setContent(storeDTO.getContent());
