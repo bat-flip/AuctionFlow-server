@@ -18,6 +18,7 @@ public class MyStoreController {
     @Autowired
     private UserService userService;
 
+    // 상점 생성 => 사용자 당 하나의 상점 생성 가능
     @PostMapping
     public StoreDTO createStore(
             @AuthenticationPrincipal OAuth2User oauth2User,
@@ -28,6 +29,17 @@ public class MyStoreController {
             throw new RuntimeException("사용자를 찾을 수 없습니다.");
         }
         return myStoreService.createStore(user, storeDTO);
+    }
+
+    // 사용자 상점 조회
+    @GetMapping ("/storeInfo")
+    public StoreDTO showUserStore(@AuthenticationPrincipal OAuth2User oAuth2User){
+        String email = oAuth2User.getAttribute("email");
+        User user = userService.findUserByEmail(email);
+        if(user == null){
+            throw new RuntimeException("사용자를 찾을 수 없습니다.");
+        }
+        return myStoreService.getUserStoreInfo(user);
     }
 
     @PatchMapping("/{storeId}")

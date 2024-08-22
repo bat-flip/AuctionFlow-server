@@ -41,6 +41,23 @@ public class MyStoreService {
         return storeDTO;
     }
 
+    // 사용자 상점 정보 조회 => 사용자 당 하나의 상점 존재
+    public StoreDTO getUserStoreInfo(User user){
+        Store store = storeRepository.findByUser(user);
+        if(store == null)
+            throw new RuntimeException("사용자의 상점이 존재하지 않습니다.");
+        StoreDTO storeDTO = new StoreDTO();
+        storeDTO.setStoreId(store.getStoreId());
+        storeDTO.setName(store.getName());
+        storeDTO.setContent(store.getContent());
+        storeDTO.setPostcode(store.getPostcode());
+        storeDTO.setBasicAddr(store.getBasicAddr());
+        storeDTO.setDetailAddr(store.getDetailAddr());
+        storeDTO.setUserId(user.getUserId());
+
+        return storeDTO;
+    }
+
     public StoreDTO updateStore(User user, Long storeId, StoreDTO storeDTO) {
         Store store = storeRepository.findById(storeId).orElseThrow(() -> new RuntimeException("상점 정보를 찾을 수 없습니다."));
         if (!store.getUser().getUserId().equals(user.getUserId())) {
