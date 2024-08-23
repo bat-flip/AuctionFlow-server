@@ -48,7 +48,7 @@ public class ItemService {
         item.setCreatedAt(LocalDateTime.now());
         item.setUpdatedAt(LocalDateTime.now());
         item.setAuctionEndTime(itemCreateRequest.getAuctionEndTime());
-        item.setItemBidStatus(itemCreateRequest.getItemBidStatus());
+        item.setItemBidStatus("active");
 
         // 이미지 업로드 및 URL 설정
         List<String> imageUrls;
@@ -82,12 +82,25 @@ public class ItemService {
         return mapToItemResponse(item);
     }
 
-    // 모든 아이템을 조회하는 메서드 추가
-    public List<ItemResponse> getAllItems() {
+    public Item getItemById1(Long itemId) {
+        return itemRepository.findById(itemId)
+                .orElseThrow(() -> new RuntimeException("아이템을 찾을 수 없습니다: " + itemId));
+    }
+    // 아이템을 저장하는 메서드 추가
+    public Item saveItem(Item item) {
+        return itemRepository.save(item);
+    }
+
+    // 모든 아이템 dto 을 조회하는 메서드 추가
+    public List<ItemResponse> getAllItemResponses() {
         List<Item> items = itemRepository.findAll();
         return items.stream()
                 .map(this::mapToItemResponse)
                 .collect(Collectors.toList());
+    }
+    // 모든 Item 엔티티를 반환하는 메서드
+    public List<Item> getAllItems() {
+        return itemRepository.findAll();
     }
 
     // 상품 검색 기능
