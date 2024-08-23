@@ -50,8 +50,10 @@ public class BidService {
 
             bidRepository.save(bid);
             // 웹소켓을 통해 실시간 입찰 정보 전송
-            BidNotification notification = new BidNotification(user.getUserId(), bidAmount);
-            messagingTemplate.convertAndSend("/topic/auction/" + itemId, notification);
+            BidNotification bidNotification = new BidNotification();
+            bidNotification.setUserId(user.getUserId());
+            bidNotification.setBidAmount(bidAmount);
+            messagingTemplate.convertAndSend("/topic/auction/" + itemId, bidNotification);
         }
         else if (bidAmount.compareTo(item.getStartingBid()) < 0) {
             throw new RuntimeException("입찰 금액이 시작 가격보다 낮습니다.");
