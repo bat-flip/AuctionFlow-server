@@ -114,8 +114,8 @@ public class ItemService {
     private ItemResponse mapToItemResponse(Item item) {
         ItemResponse response = new ItemResponse();
         response.setItemId(item.getItemId());
-        response.setCategoryId(item.getCategory().getCategoryId());
-        response.setUserId(item.getUser().getUserId());
+        response.setCategoryName(item.getCategory().getName()); // 카테고리 이름 설정
+        response.setUserName(item.getUser().getNickname()); // 사용자 이름 설정
         response.setProductImageUrls(item.getProductImages().stream()
                 .map(ItemImage::getImageUrl)
                 .collect(Collectors.toList()));

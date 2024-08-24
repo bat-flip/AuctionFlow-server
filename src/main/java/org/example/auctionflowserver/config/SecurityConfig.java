@@ -3,6 +3,7 @@ package org.example.auctionflowserver.config;
 import org.example.auctionflowserver.service.CustomOAuth2UserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
@@ -26,7 +27,9 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorizeRequests ->
                         authorizeRequests
                                 .requestMatchers("/", "/login**", "/oauth2/**", "/error").permitAll()
-                                .requestMatchers("/items/**","/api/**").authenticated()
+                                .requestMatchers(HttpMethod.GET, "/items/**").permitAll() // GET 메서드로 /items/** 접근은 인증 없이 가능
+                                .requestMatchers(HttpMethod.POST, "/items/**").authenticated() // POST 메서드로 /items/** 접근은 인증 필요
+                                .requestMatchers("/api/**").authenticated()
                                 .anyRequest().authenticated()
                 )
                 .oauth2Login(oauth2Login ->
