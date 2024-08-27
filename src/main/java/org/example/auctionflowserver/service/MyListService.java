@@ -11,8 +11,11 @@ import org.example.auctionflowserver.repository.LikeRepository;
 import org.example.auctionflowserver.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -22,14 +25,41 @@ public class MyListService {
     private LikeRepository likeRepository;
 
     @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
     private ItemRepository itemRepository;
 
     @Autowired
     private BidRepository bidRepository;
 
+    // 상품 찜하기
+    public String saveLike(User user, Item item) {
+        Optional<Like> existingLike = likeRepository.findByUserAndItem(user, item);
+
+        if (existingLike.isPresent()) {
+            return "이미 찜한 상품입니다.";
+        }
+
+        Like like = new Like();
+        like.setUser(user);
+        like.setItem(item);
+        like.setCreatedAt(LocalDateTime.now());
+
+        likeRepository.save(like);
+        return "찜 목록에 추가되었습니다.";
+    }
+
+    public String removeLike(User user, Item item) {
+        Optional<Like> existingLike = likeRepository.findByUserAndItem(user, item);
+
+        if (existingLike.isEmpty()) {
+            return "찜 목록에 없는 상품입니다.";
+        }
+
+        likeRepository.delete(existingLike.get());
+        return "찜 목록에서 제거되었습니다.";
+    }
+
+
+    // 찜 목록 조회
     public List<ItemResponse> getLikeList(User user){
         List<Like> likes = likeRepository.findByUser(user);
         return likes.stream()
