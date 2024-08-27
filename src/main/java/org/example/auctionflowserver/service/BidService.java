@@ -1,5 +1,6 @@
 package org.example.auctionflowserver.service;
 
+import org.example.auctionflowserver.dto.BidDTO;
 import org.example.auctionflowserver.dto.BidNotification;
 import org.example.auctionflowserver.entity.Bid;
 import org.example.auctionflowserver.entity.Item;
@@ -13,6 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class BidService {
@@ -60,5 +63,24 @@ public class BidService {
         }else {
             throw new RuntimeException("입찰 금액이 현재 최고 입찰가보다 낮습니다.");
         }
+    }
+
+    public List<BidDTO> findBidsByItemId(Long itemId) {
+        List<Bid> bids = bidRepository.findByItem_ItemId(itemId);
+        return bids.stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
+    private BidDTO convertToDTO(Bid bid) {
+        BidDTO dto = new BidDTO();
+        dto.setBidId(bid.getBidId());
+        dto.setUserId(bid.getUser().getUserId());
+        dto.setUserNickname(bid.getUser().getNickname());
+        dto.setItemId(bid.getItem().getItemId());
+        dto.setTitle(bid.getItem().getTitle());  // 아이템의 제목 가져오기
+        dto.setBidAmount(bid.getBidAmount());
+        dto.setBidTime(bid.getBidTime());
+        return dto;
     }
 }

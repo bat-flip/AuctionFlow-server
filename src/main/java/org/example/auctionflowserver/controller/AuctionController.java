@@ -1,5 +1,7 @@
 package org.example.auctionflowserver.controller;
 
+import org.example.auctionflowserver.dto.BidDTO;
+import org.example.auctionflowserver.entity.Bid;
 import org.example.auctionflowserver.entity.Item;
 import org.example.auctionflowserver.entity.User;
 import org.example.auctionflowserver.service.BidService;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @RestController
 @RequestMapping("/auction")
@@ -27,6 +30,12 @@ public class AuctionController {
     private UserService userService;
     @Autowired
     private SimpMessagingTemplate messagingTemplate;
+
+    @GetMapping("/bids/{itemId}")
+    public ResponseEntity<List<BidDTO>> getBidsByItemId(@PathVariable Long itemId) {
+        List<BidDTO> bidDTOs = bidService.findBidsByItemId(itemId);
+        return ResponseEntity.ok(bidDTOs);
+    }
 
     @PostMapping("/bid")
     public ResponseEntity<?> placeBid(

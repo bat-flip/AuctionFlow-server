@@ -8,4 +8,6 @@ import java.util.List;
 
 public interface BidRepository extends JpaRepository<Bid, Long> {
     List<Bid> findByUser(User user);
+
+    List<Bid> findByItem_ItemId(Long itemId);
 }
