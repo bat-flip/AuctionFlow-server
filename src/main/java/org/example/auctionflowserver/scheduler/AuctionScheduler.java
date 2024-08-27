@@ -3,6 +3,7 @@ package org.example.auctionflowserver.scheduler;
 import org.example.auctionflowserver.entity.Item;
 import org.example.auctionflowserver.service.ItemService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -15,15 +16,26 @@ public class AuctionScheduler {
     @Autowired
     private ItemService itemService;
 
-    @Scheduled(cron = "0 * * * * ?") // 매 분마다 실행
+    @Autowired
+    private SimpMessagingTemplate messagingTemplate;
+
+    @Scheduled(cron = "0 * * * * ?")
     public void checkAuctionEndTimes() {
         List<Item> activeItems = itemService.getAllItems().stream()
-                .filter(item -> "active".equals(item.getItemBidStatus()) && item.getAuctionEndTime().isBefore(LocalDateTime.now()))
+                .filter(item -> {
+                    if ("active".equals(item.getItemBidStatus()) && item.getAuctionEndTime() != null) {
+                        return item.getAuctionEndTime().isBefore(LocalDateTime.now());
+                    } else {
+                        return false;
+                    }
+                })
                 .toList();
 
         for (Item item : activeItems) {
             item.setItemBidStatus("end");
-            itemService.saveItem(item); // 상태 업데이트 및 저장
+            itemService.saveItem(item);
+
+            messagingTemplate.convertAndSend("/topic/auction/" + item.getItemId(), "경매가 종료되었습니다.");
         }
     }
 }
