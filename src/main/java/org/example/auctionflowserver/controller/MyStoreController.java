@@ -42,38 +42,26 @@ public class MyStoreController {
         return myStoreService.getUserStoreInfo(user);
     }
 
-    @PatchMapping("/{storeId}")
+    @PatchMapping
     public StoreDTO updateStore(@AuthenticationPrincipal OAuth2User oauth2User,
-                                @PathVariable Long storeId, @RequestBody StoreDTO storeDTO) {
+                                @RequestBody StoreDTO storeDTO) {
         String email = oauth2User.getAttribute("email");
         User user = userService.findUserByEmail(email);
         if (user == null) {
             throw new RuntimeException("사용자를 찾을 수 없습니다.");
         }
-        return myStoreService.updateStore(user, storeId, storeDTO);
+        return myStoreService.updateStore(user, storeDTO);
     }
 
-    @GetMapping("/{storeId}")
-    public StoreDTO getStore(
-            @AuthenticationPrincipal OAuth2User oauth2User,
-            @PathVariable Long storeId) {
+    @DeleteMapping
+    public String deleteStore(
+            @AuthenticationPrincipal OAuth2User oauth2User) {
         String email = oauth2User.getAttribute("email");
         User user = userService.findUserByEmail(email);
         if (user == null) {
             throw new RuntimeException("사용자를 찾을 수 없습니다.");
         }
-        return myStoreService.getStore(user, storeId);
-    }
-
-    @DeleteMapping("/{storeId}")
-    public void deleteStore(
-            @AuthenticationPrincipal OAuth2User oauth2User,
-            @PathVariable Long storeId) {
-        String email = oauth2User.getAttribute("email");
-        User user = userService.findUserByEmail(email);
-        if (user == null) {
-            throw new RuntimeException("사용자를 찾을 수 없습니다.");
-        }
-        myStoreService.deleteStore(user, storeId);
+        myStoreService.deleteStore(user);
+        return "상점이 성공적으로 삭제되었습니다.";
     }
 }
