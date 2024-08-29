@@ -10,6 +10,8 @@ import org.example.auctionflowserver.entity.User;
 import org.example.auctionflowserver.repository.UserRepository;
 import org.example.auctionflowserver.service.ChatService;
 import org.example.auctionflowserver.service.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -35,7 +37,7 @@ public class ChatController {
     private SimpMessagingTemplate simpMessagingTemplate;
 
     // 채팅방 생성
-    @PostMapping("/room")
+    @PostMapping("/chatroom")
     @ResponseBody
     public ChatRoom createChatRoom(@RequestBody ChatRoomRequest request,
                                    @AuthenticationPrincipal OAuth2User oAuth2User) {
@@ -92,11 +94,14 @@ public class ChatController {
         return dto;
     }
 
+    private static final Logger logger = LoggerFactory.getLogger(ChatController.class);
+
     // WebSocket을 통해 메세지 전송
     @MessageMapping("/sendMessage")
-    @SendTo("/topic/messages")
+    //@SendTo("/topic/messages")
     public MessageDTO sendMessageWebSocket(@Payload MessageRequest messageRequest,
                                            @AuthenticationPrincipal OAuth2User oAuth2User) {
+
         String email = oAuth2User.getAttribute("email");
         User sender = userService.findUserByEmail(email);
         if (sender == null) {
@@ -105,6 +110,8 @@ public class ChatController {
 
         // 메시지 저장 및 전송
         Message message = chatService.sendMessage2(sender, messageRequest.getChatRoomId(), messageRequest.getContent());
+
+        logger.info("Message sent by {}: {}", sender.getEmail(), message.getContent());
 
         // DTO로 변환
         return convertToMessageDTO(message);

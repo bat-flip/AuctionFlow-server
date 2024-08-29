@@ -27,6 +27,7 @@ public class SecurityConfig {
                         authorizeRequests
                                 .requestMatchers("/", "/login**", "/oauth2/**", "/error").permitAll()
                                 .requestMatchers("/items/**","/api/**").authenticated()
+                                .requestMatchers("/ws/**").authenticated()
                                 .anyRequest().authenticated()
                 )
                 .oauth2Login(oauth2Login ->
