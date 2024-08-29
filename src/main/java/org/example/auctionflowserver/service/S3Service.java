@@ -1,6 +1,7 @@
 package org.example.auctionflowserver.service;
 
 import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -28,7 +29,9 @@ public class S3Service {
 
         for (MultipartFile file : files) {
             String key = Paths.get(folderName, file.getOriginalFilename()).toString();
-            s3Client.putObject(new PutObjectRequest(bucketName, key, file.getInputStream(), null));
+            PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, key, file.getInputStream(), null)
+                    .withCannedAcl(CannedAccessControlList.PublicRead);
+            s3Client.putObject(putObjectRequest);
             imageUrls.add(s3Client.getUrl(bucketName, key).toString());
         }
 

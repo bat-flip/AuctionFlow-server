@@ -58,10 +58,10 @@ public class MyStoreService {
         return storeDTO;
     }
 
-    public StoreDTO updateStore(User user, Long storeId, StoreDTO storeDTO) {
-        Store store = storeRepository.findById(storeId).orElseThrow(() -> new RuntimeException("상점 정보를 찾을 수 없습니다."));
-        if (!store.getUser().getUserId().equals(user.getUserId())) {
-            throw new RuntimeException("상점에 해당하는 사용자가 아닙니다. 접근이 제한됩니다.");
+    public StoreDTO updateStore(User user, StoreDTO storeDTO) {
+        Store store = storeRepository.findByUser(user);
+        if (store == null) {
+            throw new RuntimeException("사용자의 상점이 존재하지 않습니다.");
         }
         store.setName(storeDTO.getName());
         store.setContent(storeDTO.getContent());
@@ -70,34 +70,19 @@ public class MyStoreService {
         store.setDetailAddr(storeDTO.getDetailAddr());
         storeRepository.save(store);
 
-        // 변경 내용 업데이트
+        // 변경 내용 저장
         storeDTO.setStoreId(store.getStoreId());
         storeDTO.setUserId(store.getUser().getUserId());
 
         return storeDTO;
     }
 
-    public StoreDTO getStore(User user, Long storeId) {
-        Store store = storeRepository.findById(storeId).orElseThrow(() -> new RuntimeException("상점 정보를 찾을 수 없습니다."));
-        if (!store.getUser().getUserId().equals(user.getUserId())) {
-            throw new RuntimeException("상점에 해당하는 사용자가 아닙니다. 접근이 제한됩니다.");
-        }
-        StoreDTO storeDTO = new StoreDTO();
-        storeDTO.setStoreId(store.getStoreId());
-        storeDTO.setName(store.getName());
-        storeDTO.setContent(store.getContent());
-        storeDTO.setPostcode(store.getPostcode());
-        storeDTO.setBasicAddr(store.getBasicAddr());
-        storeDTO.setDetailAddr(store.getDetailAddr());
-        storeDTO.setUserId(store.getUser().getUserId());
-        return storeDTO;
-    }
 
-    public void deleteStore(User user, Long storeId) {
-        Store store = storeRepository.findById(storeId).orElseThrow(() -> new RuntimeException("상점 정보를 찾을 수 없습니다."));
-        if (!store.getUser().getUserId().equals(user.getUserId())) {
-            throw new RuntimeException("상점에 해당하는 사용자가 아닙니다. 접근이 제한됩니다.");
+    public void deleteStore(User user) {
+        Store store = storeRepository.findByUser(user);
+        if (store == null) {
+            throw new RuntimeException("사용자의 상점이 존재하지 않습니다.");
         }
-        storeRepository.deleteById(storeId);
+        storeRepository.delete(store);
     }
 }

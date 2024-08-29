@@ -52,6 +52,7 @@ public class ItemController {
         // 아이템 등록 처리
         ItemResponse itemResponse = itemService.registerItem(user, itemCreateRequest);
         return ResponseEntity.ok(itemResponse);
+
     }
     @GetMapping("/{itemId}")
     public ItemResponse getItemById(@PathVariable Long itemId) {
@@ -60,7 +61,7 @@ public class ItemController {
 
     @GetMapping
     public ResponseEntity<List<ItemResponse>> getAllItems() {
-        List<ItemResponse> items = itemService.getAllItems();
+        List<ItemResponse> items = itemService.getAllItemResponses();
         return ResponseEntity.ok(items);
     }
 

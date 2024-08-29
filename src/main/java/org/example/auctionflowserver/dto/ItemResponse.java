@@ -22,4 +22,6 @@ public class ItemResponse {
     private LocalDateTime updatedAt;
     private LocalDateTime auctionEndTime;
     private String itemBidStatus;
+    private String categoryName;  // 카테고리 이름
+    private String userName;      // 사용자 이름
 }
