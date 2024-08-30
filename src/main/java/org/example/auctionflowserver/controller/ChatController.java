@@ -1,9 +1,6 @@
 package org.example.auctionflowserver.controller;
 
-import org.example.auctionflowserver.dto.ChatRoomRequest;
-import org.example.auctionflowserver.dto.KakaoUserDto;
-import org.example.auctionflowserver.dto.MessageDTO;
-import org.example.auctionflowserver.dto.MessageRequest;
+import org.example.auctionflowserver.dto.*;
 import org.example.auctionflowserver.entity.ChatRoom;
 import org.example.auctionflowserver.entity.Message;
 import org.example.auctionflowserver.entity.User;
@@ -20,6 +17,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/chat")
@@ -117,7 +116,19 @@ public class ChatController {
         return convertToMessageDTO(message);
     }
 
+    @GetMapping("/myroomlist")
+    @ResponseBody
+    public List<ChatRoomDTO> getMyChatRoomList(@AuthenticationPrincipal OAuth2User oAuth2User) {
+        String email = oAuth2User.getAttribute("email");
+        User user = userService.findUserByEmail(email);
 
+        if (user == null) {
+            throw new RuntimeException("사용자를 찾을 수 없습니다.");
+        }
+
+        // ChatRoomDTO 리스트를 반환
+        return chatService.findChatRoomDTOsByUser(user);
+    }
 
 
 
